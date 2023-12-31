@@ -10,6 +10,9 @@ credentials = open('credentials.txt', "r")
 client_id = credentials.readline().rstrip()
 client_secret = credentials.readline().rstrip()
 
+# Create empty platforms map
+platforms = {}
+
 body = {
     'client_id': client_id,
     'client_secret': client_secret,
@@ -18,6 +21,18 @@ body = {
 r = requests.post('https://id.twitch.tv/oauth2/token', body)
 keys = r.json();
 wrapper = IGDBWrapper(client_id, keys['access_token'])
+
+# Load platform list
+# Seems that currently we have 200 entries, so 500 should be a reasonable value for now
+platform_byte_array = wrapper.api_request(
+    'platforms',
+    'fields name; limit 500;' 
+    )
+platform_data = json.loads(platform_byte_array.decode('utf8'))
+
+# Store all platforms on a dictionary instead of running this query once per game.
+for entry in platform_data:
+    platforms[entry["id"]] = entry["name"]
 
 # Start creating montage commands
 montage_cmd = ['montage']
@@ -48,7 +63,8 @@ while True:
 
     print("Processing: {}".format(game_name))
     # Get cover id from JSON API request
-    search = 'fields name, cover; offset 0; where name ~ "{}"*;'.format(game_name)
+    # Category is 0 for main game so we use asc to make dlcs go down
+    search = 'fields name, platforms, cover; offset 0; sort release_dates.date desc; limit 40; sort category asc; where name ~ "{}"*;'.format(game_name)
     byte_array = wrapper.api_request(
             'games',
             search
@@ -64,7 +80,17 @@ while True:
     elif len(data) > 1:
         idx = 1
         for entry in data:
-            print("{}. {}".format(idx, entry['name']))
+            # Do we have platform information to fill?
+            platform_str = ""
+            if 'platforms' in entry:
+                for p in entry['platforms']:
+                    platform_str += platforms[p] + ", "
+
+            # Print game name
+            if len(platform_str):
+                print("{}. {} ({})".format(idx, entry['name'], platform_str[:-2]))
+            else:
+                print("{}. {}".format(idx, entry['name']))
             idx+=1
         print()
         print("0. Continue/Skip entry")
