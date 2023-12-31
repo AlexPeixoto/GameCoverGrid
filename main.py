@@ -43,10 +43,10 @@ while True:
         line_idx+=1
         continue
 
-    print("Processing: {}".format(game_name))
     if not game_name:
         break
 
+    print("Processing: {}".format(game_name))
     # Get cover id from JSON API request
     search = 'fields name, cover; offset 0; where name ~ "{}"*;'.format(game_name)
     byte_array = wrapper.api_request(
@@ -66,9 +66,9 @@ while True:
         for entry in data:
             print("{}. {}".format(idx, entry['name']))
             idx+=1
+        print()
         print("0. Continue/Skip entry")
 
-        print(len(data))
         
         selected_entry = 99 
         while selected_entry < 0 or selected_entry > len(data):
@@ -98,7 +98,7 @@ while True:
 
     # assumes jpg image format
     path = "images/{}.jpg".format(line_idx) 
-    url = "http:{}".format(data['url'])
+    url = "http:{}".format(data['url'].replace("_thumb", "_cover_big"))
     r = requests.get(url, stream=True)
     if r.ok:
         print("Image being stored on", os.path.abspath(path))
