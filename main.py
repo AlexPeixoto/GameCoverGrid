@@ -12,6 +12,7 @@ client_secret = credentials.readline().rstrip()
 
 # Create empty platforms map
 platforms = {}
+skipped_games = [] 
 
 body = {
     'client_id': client_id,
@@ -75,6 +76,7 @@ while True:
     selected_entry = 0 
     if len(data) == 0:
         print ("No Entry found for {}".format(game_name))
+        skipped_games.extend([game_name])
         line_idx+=1;
         continue
     elif len(data) > 1:
@@ -99,10 +101,15 @@ while True:
         selected_entry = 99 
         while selected_entry < 0 or selected_entry > len(data):
             print()
-            print("Please select a valid entry as multiple where found when looking for: ".format(game_name))
-            selected_entry=int(input())
+            print("Please select a valid entry as multiple where found when looking for (Pressing just return selects first option): ".format(game_name))
+            value=input()
+            if value == '':
+                selected_entry = 1
+            else:
+                selected_entry=int(value)
         
         if selected_entry == 0:
+            skipped_games.extend([game_name])
             line_idx+=1
             continue
         
@@ -142,16 +149,15 @@ while True:
 file.close()
 file_corrected.close()
 
+if len(skipped_games) > 0:
+    print()
+    print("The following games were not found or skipped:")
+    print(skipped_games)
+    for game in skipped_games:
+        print(game)
 
+# Generate image
+print("Generating final image!")
 grid_size = int(math.sqrt(line_idx));
-
 montage_cmd.extend(['-tile', "{}x{}".format(grid_size, grid_size + 1), '-background', 'none', '-geometry', '+0+0', 'jpg:./result.jpg'])
-print(montage_cmd)
-#montage_cmd.extend([capture_output = True, text = True])
-p = subprocess.Popen(montage_cmd)
-
-    #byte_array = wrapper.api_request(
-    #    'games',
-    #    'fields name; where id = 1942;'
-    #)
-    #print(byte_array)
+subprocess.Popen(montage_cmd)
