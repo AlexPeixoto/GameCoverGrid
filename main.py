@@ -152,7 +152,6 @@ file_corrected.close()
 if len(skipped_games) > 0:
     print()
     print("The following games were not found or skipped:")
-    print(skipped_games)
     for game in skipped_games:
         print(game)
 
