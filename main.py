@@ -152,10 +152,12 @@ file_corrected.close()
 if len(skipped_games) > 0:
     print()
     print("The following games were not found or skipped:")
+    print()
     for game in skipped_games:
         print(game)
 
 # Generate image
+print()
 print("Generating final image!")
 grid_size = int(math.sqrt(line_idx));
 montage_cmd.extend(['-tile', "{}x{}".format(grid_size, grid_size + 1), '-background', 'none', '-geometry', '+0+0', 'jpg:./result.jpg'])

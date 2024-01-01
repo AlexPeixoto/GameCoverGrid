@@ -39,7 +39,15 @@ Good thing is that it will skip any file that it thinks that was already downloa
 
 The script uses the image name and game position on the file, so if the game on the line 30 has a 30.jpg on the images file it will skip it, so you should either avoid adding games in the middle of the text or delete images from that position down to the bottom.
 
+## I cannot find my game!!!
+
+Check igdb search https://www.igdb.com/, it matches against this database and while we do have match for case insensitive it expects the start of the match to be correct (kind of a like 'game_name%').
+
+## The script crashes on a specific game
+
+This can be due to a new bug or the fact that for now it doesn't handle special characters like ö from "God of War Ragnarök" very well. You can either reduce the name and match it when asked or remove it for now.
 
 ## Script is buggy, not good.
 
-Sorry to hear that, this was basically a "1h" hackaton and I do play to improve things, feel free to open a merge request or open a bug tracking, I hope to have this in a better shape in the future.
+Sorry to hear that, this was basically a "1h" hackaton and I do plan to improve things, feel free to open a merge request or open a bug tracking, I hope to have this in a better shape in the future.
+
